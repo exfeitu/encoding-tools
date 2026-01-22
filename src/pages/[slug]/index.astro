@@ -1,0 +1,464 @@
+---
+// src/pages/[slug]/index.astro
+import { getEntryBySlug, getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+type Tool = CollectionEntry<"tools">;
+
+export async function getStaticPaths() {
+  const tools = await getCollection("tools");
+  return tools.map((tool: Tool) => ({
+    params: { slug: tool.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const entry = await getEntryBySlug("tools", slug);
+if (!entry) {
+  return Astro.redirect("/404");
+}
+
+const { data } = entry;
+const { Content } = await entry.render();
+const { h1, meta_desc, template } = data;
+
+let toolHtml = "";
+let toolScript = "";
+
+// 根据 template 渲染不同工具
+switch (template) {
+  case "converter":
+    toolHtml = `
+      <div class="tool-container">
+        <div class="input-section">
+          <label for="input" class="section-label">
+            <span class="label-icon">📥</span>
+            <span>输入 JSON</span>
+          </label>
+          <textarea id="input" class="tool-input" placeholder='{ "hello": "world" }' spellcheck="false"></textarea>
+        </div>
+        <div class="arrow-divider">→</div>
+        <div class="output-section">
+          <label class="section-label">
+            <span class="label-icon">📤</span>
+            <span>输出 YAML</span>
+          </label>
+          <div id="output" class="tool-output">在左侧输入 JSON 数据...</div>
+        </div>
+      </div>
+    `;
+    toolScript = `
+      const inputEl = document.getElementById('input');
+      const outputEl = document.getElementById('output');
+      inputEl.addEventListener('input', () => {
+        if (!inputEl.value.trim()) {
+          outputEl.textContent = '在左侧输入 JSON 数据...';
+          outputEl.className = 'tool-output';
+          return;
+        }
+        try {
+          const json = JSON.parse(inputEl.value);
+          const yamlStr = window.jsyaml.dump(json);
+          outputEl.textContent = yamlStr;
+          outputEl.className = 'tool-output success';
+        } catch (e) {
+          outputEl.textContent = '❌ 无效的 JSON: ' + e.message;
+          outputEl.className = 'tool-output error';
+        }
+      });
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js';
+      script.onload = () => {
+        window.jsyaml = jsyaml;
+        if (inputEl.value) inputEl.dispatchEvent(new Event('input'));
+      };
+      document.head.appendChild(script);
+    `;
+    break;
+
+  case "encoder":
+    toolHtml = `
+      <div class="tool-container">
+        <div class="input-section">
+          <label for="input" class="section-label">
+            <span class="label-icon">📝</span>
+            <span>原始文本</span>
+          </label>
+          <textarea id="input" class="tool-input" placeholder='Hello World' spellcheck="false"></textarea>
+        </div>
+        <div class="arrow-divider">→</div>
+        <div class="output-section">
+          <label class="section-label">
+            <span class="label-icon">🔐</span>
+            <span>Base64 编码</span>
+          </label>
+          <div id="output" class="tool-output">在左侧输入文本...</div>
+        </div>
+      </div>
+    `;
+    toolScript = `
+      const inputEl = document.getElementById('input');
+      const outputEl = document.getElementById('output');
+      inputEl.addEventListener('input', () => {
+        if (!inputEl.value) {
+          outputEl.textContent = '在左侧输入文本...';
+          outputEl.className = 'tool-output';
+          return;
+        }
+        try {
+          const text = inputEl.value;
+          const encoded = btoa(unescape(encodeURIComponent(text)));
+          outputEl.textContent = encoded;
+          outputEl.className = 'tool-output success';
+        } catch (e) {
+          outputEl.textContent = '❌ 编码失败: ' + e.message;
+          outputEl.className = 'tool-output error';
+        }
+      });
+    `;
+    break;
+
+  case "decoder":
+    toolHtml = `
+      <div class="tool-container">
+        <div class="input-section">
+          <label for="input" class="section-label">
+            <span class="label-icon">🔐</span>
+            <span>Base64 编码</span>
+          </label>
+          <textarea id="input" class="tool-input" placeholder='SGVsbG8gV29ybGQ=' spellcheck="false"></textarea>
+        </div>
+        <div class="arrow-divider">→</div>
+        <div class="output-section">
+          <label class="section-label">
+            <span class="label-icon">📝</span>
+            <span>解码结果</span>
+          </label>
+          <div id="output" class="tool-output">在左侧输入 Base64...</div>
+        </div>
+      </div>
+    `;
+    toolScript = `
+      const inputEl = document.getElementById('input');
+      const outputEl = document.getElementById('output');
+      inputEl.addEventListener('input', () => {
+        if (!inputEl.value.trim()) {
+          outputEl.textContent = '在左侧输入 Base64...';
+          outputEl.className = 'tool-output';
+          return;
+        }
+        try {
+          const text = inputEl.value.trim();
+          const decoded = decodeURIComponent(escape(atob(text)));
+          outputEl.textContent = decoded;
+          outputEl.className = 'tool-output success';
+        } catch (e) {
+          outputEl.textContent = '❌ 无效的 Base64: ' + e.message;
+          outputEl.className = 'tool-output error';
+        }
+      });
+    `;
+    break;
+
+  case "validator":
+    toolHtml = `
+      <div class="tool-container validator">
+        <div class="input-section full-width">
+          <label for="input" class="section-label">
+            <span class="label-icon">📋</span>
+            <span>输入 JSON/YAML</span>
+          </label>
+          <textarea id="input" class="tool-input" placeholder='{ "valid": "json" }' spellcheck="false"></textarea>
+        </div>
+        <div class="output-section full-width">
+          <label class="section-label">
+            <span class="label-icon">✓</span>
+            <span>验证结果</span>
+          </label>
+          <div id="output" class="tool-output">等待输入...</div>
+        </div>
+      </div>
+    `;
+    toolScript = `
+      const inputEl = document.getElementById('input');
+      const outputEl = document.getElementById('output');
+      inputEl.addEventListener('input', () => {
+        if (!inputEl.value.trim()) {
+          outputEl.textContent = '等待输入...';
+          outputEl.className = 'tool-output';
+          return;
+        }
+        try {
+          const text = inputEl.value;
+          const parsed = JSON.parse(text);
+          outputEl.innerHTML = '<div class="success-badge">✅ 有效的 JSON</div><div class="json-info">已解析 ' + JSON.stringify(parsed).length + ' 个字符</div>';
+          outputEl.className = 'tool-output success';
+        } catch (e) {
+          outputEl.innerHTML = '<div class="error-badge">❌ 无效的 JSON</div><div class="error-message">' + e.message + '</div>';
+          outputEl.className = 'tool-output error';
+        }
+      });
+    `;
+    break;
+
+  case "explain":
+    toolHtml = "";
+    toolScript = "";
+    break;
+
+  default:
+    toolHtml = "<p>Unknown tool type.</p>";
+    toolScript = "";
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{h1}</title>
+    <meta name="description" content={meta_desc} />
+    <meta property="og:title" content={h1} />
+    <meta property="og:description" content={meta_desc} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-light: #3b82f6;
+        --primary-dark: #1e40af;
+        --success: #10b981;
+        --success-bg: #d1fae5;
+        --error: #ef4444;
+        --error-bg: #fee2e2;
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+        --border: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        background: var(--bg-main);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .tool-container {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1.5rem;
+        margin: 2rem 0;
+        padding: 2rem;
+        background: var(--bg-card);
+        border-radius: 16px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+      }
+
+      .tool-container.validator {
+        grid-template-columns: 1fr;
+      }
+
+      .input-section,
+      .output-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .section-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .label-icon {
+        font-size: 1.25rem;
+      }
+
+      .tool-input {
+        width: 100%;
+        min-height: 200px;
+        padding: 1rem;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg-main);
+        color: var(--text-primary);
+        resize: vertical;
+        transition: all 0.2s ease;
+      }
+
+      .tool-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .tool-input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.6;
+      }
+
+      .tool-output {
+        width: 100%;
+        min-height: 200px;
+        padding: 1rem;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        background: var(--bg-main);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+      }
+
+      .tool-output.success {
+        background: var(--success-bg);
+        border-color: var(--success);
+        color: var(--text-primary);
+      }
+
+      .tool-output.error {
+        background: var(--error-bg);
+        border-color: var(--error);
+        color: var(--error);
+      }
+
+      .arrow-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--primary);
+        font-weight: bold;
+        padding-top: 2rem;
+      }
+
+      .success-badge,
+      .error-badge {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .success-badge {
+        color: var(--success);
+      }
+
+      .error-badge {
+        color: var(--error);
+      }
+
+      .json-info {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+      }
+
+      .error-message {
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        background: rgba(239, 68, 68, 0.1);
+        border-radius: 8px;
+      }
+
+      .prose {
+        margin-top: 3rem;
+        padding-top: 3rem;
+        border-top: 2px solid var(--border);
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        h1 {
+          font-size: 1.75rem;
+        }
+
+        .tool-container {
+          grid-template-columns: 1fr;
+          padding: 1.5rem;
+          gap: 1rem;
+        }
+
+        .arrow-divider {
+          transform: rotate(90deg);
+          padding: 0;
+        }
+
+        .tool-input,
+        .tool-output {
+          min-height: 150px;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .tool-container {
+        animation: fadeIn 0.5s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{h1}</h1>
+
+    <!-- 工具区域 -->
+    <div set:html={toolHtml} />
+
+    <!-- 内容区域 -->
+    <section class="mt-8 prose">
+      <Content />
+    </section>
+
+    <!-- 工具脚本 -->
+    {toolScript && <script set:html={toolScript} is:inline />}
+  </body>
+</html>

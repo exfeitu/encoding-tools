@@ -1,0 +1,21 @@
+keyword,intent,monthly_search,kd,serp_type,template,h1,meta_desc
+json to yaml converter,tool,2900,18,tool_snippet,converter,JSON to YAML Converter – Instant Online Conversion,Convert JSON to YAML format instantly. No signup, free forever.
+yaml to json converter,tool,1900,16,tool_snippet,converter,YAML to JSON Converter – Free Online Tool,Transform YAML to valid JSON with one click. Works in browser.
+base64 decode online,tool,4400,19,tool_snippet,decoder,Base64 Decode – Online Decoder for Text & Files,Decode Base64 strings to plain text or files. Secure, client-side only.
+base64 encode online,tool,3600,17,tool_snippet,encoder,Base64 Encode – Free Online Encoder,Encode text or files to Base64. Runs in your browser, no data sent.
+csv to json converter,tool,2400,15,tool_snippet,converter,CSV to JSON Converter – Free & Fast,Convert CSV files to JSON array online. Supports headers and quotes.
+json to csv converter,tool,1800,14,tool_snippet,converter,JSON to CSV Converter – Download as CSV,Turn JSON array into downloadable CSV file. Works offline.
+xml to json converter,tool,1600,18,tool_snippet,converter,XML to JSON Converter – Online & Free,Convert XML to JSON with proper nesting. No server upload.
+json to xml converter,tool,1300,19,tool_snippet,converter,JSON to XML Converter – Instant Transformation,Convert JSON objects to well-formed XML. Client-side processing.
+url decode online,tool,1200,12,tool_snippet,decoder,URL Decode – Decode Percent-Encoded Strings,Decode URL-encoded strings (e.g., %20 → space). Instant result.
+url encode online,tool,1100,11,tool_snippet,encoder,URL Encode – Encode Special Characters,Encode text for safe use in URLs. Free and private.
+html escape online,tool,900,13,tool_snippet,encoder,HTML Escape Tool – Encode Special Characters,Escape <, >, &, " for safe HTML display. No data leaves your device.
+html unescape online,tool,850,14,tool_snippet,decoder,HTML Unescape – Decode Entities to Text,Convert &lt; &gt; &amp; back to < > &. Runs locally.
+unix timestamp to date,tool,8200,20,tool_snippet,converter,Unix Timestamp to Date Converter – Human Readable,Convert epoch time to readable date (UTC/local). Millisecond support.
+date to unix timestamp,tool,3200,18,tool_snippet,converter,Date to Unix Timestamp – Get Epoch Time,Convert any date to Unix timestamp. Supports timezones.
+json validator online,tool,2100,16,tool_snippet,validator,JSON Validator – Check Syntax & Format,Validate and pretty-print JSON. Error highlighting included.
+yaml validator online,tool,720,17,tool_snippet,validator,YAML Validator – Check Syntax Errors,Validate YAML structure online. Real-time error feedback.
+what is base64 encoding,explain,1600,10,featured_snippet,explain,What Is Base64 Encoding? A Simple Guide,Learn how Base64 encoding works, why it's used, and when to apply it.
+how does json to yaml work,explain,480,9,forum_snippet,explain,How Does JSON to YAML Conversion Work?,Understand the mapping rules between JSON and YAML formats.
+is base64 encryption,explain,2900,12,featured_snippet,explain,Is Base64 Encryption? No – Here’s Why,Base64 is encoding, not encryption. Learn the critical difference.
+why use yaml over json,explain,1300,15,forum_snippet,explain,Why Use YAML Over JSON? Pros and Cons,YAML vs JSON: readability, comments, and use cases compared.
