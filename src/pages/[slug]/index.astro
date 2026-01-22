@@ -511,7 +511,11 @@ switch (template) {
       }
 
       body {
-        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family:
+          "Segoe UI",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
         max-width: 1400px;
         margin: 0 auto;
         padding: 2rem 1.5rem;
@@ -527,7 +531,11 @@ switch (template) {
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 2rem;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -559,6 +567,30 @@ switch (template) {
         gap: 1.5rem;
       }
 
+      .input-section,
+      .output-section {
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* 关键：让 section 占满容器高度 */
+      }
+
+      .tool-input {
+        width: 100%;
+        flex: 1; /* 已有 */
+        min-height: 0; /* 已有 */
+        height: 100%; /* 新增：确保占满父容器 */
+        padding: 1rem;
+        font-family: "Consolas", "Monaco", "Courier New", monospace;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg-main);
+        color: var(--text-primary);
+        resize: none;
+        transition: all 0.2s ease;
+      }
+
       .middle-buttons {
         display: flex;
         flex-direction: column;
@@ -588,7 +620,11 @@ switch (template) {
         font-size: 1rem;
         font-weight: 600;
         color: white;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        background: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--primary-dark) 100%
+        );
         border: none;
         border-radius: 12px;
         cursor: pointer;
@@ -691,7 +727,7 @@ switch (template) {
         flex: 1;
         min-height: 0;
         padding: 1rem;
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-family: "Consolas", "Monaco", "Courier New", monospace;
         font-size: 0.9rem;
         line-height: 1.5;
         border: 2px solid var(--border);
@@ -717,7 +753,7 @@ switch (template) {
         width: 100%;
         min-height: 200px;
         padding: 1rem;
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-family: "Consolas", "Monaco", "Courier New", monospace;
         font-size: 0.9rem;
         line-height: 1.5;
         background: var(--bg-main);
@@ -740,8 +776,6 @@ switch (template) {
         border-color: var(--error);
         color: var(--error);
       }
-
-
 
       .success-badge,
       .error-badge {
@@ -867,54 +901,56 @@ switch (template) {
 
     <!-- 工具脚本 -->
     {toolScript && <script set:html={toolScript} is:inline />}
-    
+
     <!-- 通用按钮功能脚本 -->
     <script is:inline>
       function setupButtons() {
         // 复制按钮
-        document.querySelectorAll('.copy-btn').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const target = btn.getAttribute('data-target');
+        document.querySelectorAll(".copy-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const target = btn.getAttribute("data-target");
             const element = document.getElementById(target);
             const text = element.value || element.textContent;
-            
+
             try {
               await navigator.clipboard.writeText(text);
               const originalHTML = btn.innerHTML;
-              btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>已复制';
-              btn.classList.add('success');
-              
+              btn.innerHTML =
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>已复制';
+              btn.classList.add("success");
+
               setTimeout(() => {
                 btn.innerHTML = originalHTML;
-                btn.classList.remove('success');
+                btn.classList.remove("success");
               }, 2000);
             } catch (err) {
-              alert('复制失败: ' + err.message);
+              alert("复制失败: " + err.message);
             }
           });
         });
-        
+
         // 粘贴按钮
-        document.querySelectorAll('.paste-btn').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const target = btn.getAttribute('data-target');
+        document.querySelectorAll(".paste-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const target = btn.getAttribute("data-target");
             const element = document.getElementById(target);
-            
+
             try {
               const text = await navigator.clipboard.readText();
               element.value = text;
-              element.dispatchEvent(new Event('input'));
-              
+              element.dispatchEvent(new Event("input"));
+
               const originalHTML = btn.innerHTML;
-              btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>已粘贴';
-              btn.classList.add('success');
-              
+              btn.innerHTML =
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>已粘贴';
+              btn.classList.add("success");
+
               setTimeout(() => {
                 btn.innerHTML = originalHTML;
-                btn.classList.remove('success');
+                btn.classList.remove("success");
               }, 2000);
             } catch (err) {
-              alert('粘贴失败: ' + err.message);
+              alert("粘贴失败: " + err.message);
             }
           });
         });
