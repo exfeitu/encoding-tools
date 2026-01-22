@@ -29,71 +29,117 @@ let toolScript = "";
 switch (template) {
   case "converter":
     toolHtml = `
-      <div class="tool-container">
-        <div class="input-section">
-          <div class="section-header">
-            <label for="input" class="section-label">
-              <span class="label-icon">📥</span>
-              <span>输入 JSON</span>
-            </label>
-            <div class="button-group">
-              <button class="action-btn paste-btn" data-target="input" title="粘贴">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                粘贴
-              </button>
+      <div class="tool-wrapper">
+        <div class="tool-container three-column">
+          <div class="input-section">
+            <div class="section-header">
+              <label for="input" class="section-label">
+                <span class="label-icon">📥</span>
+                <span>输入 JSON</span>
+              </label>
+              <div class="button-group">
+                <button class="action-btn copy-btn" data-target="input" title="复制">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  复制
+                </button>
+                <button class="action-btn paste-btn" data-target="input" title="粘贴">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                  粘贴
+                </button>
+              </div>
             </div>
+            <textarea id="input" class="tool-input" placeholder='{ "hello": "world" }' spellcheck="false"></textarea>
           </div>
-          <textarea id="input" class="tool-input" placeholder='{ "hello": "world" }' spellcheck="false"></textarea>
-        </div>
-        <div class="output-section">
-          <div class="section-header">
-            <label class="section-label">
-              <span class="label-icon">📤</span>
-              <span>输出 YAML</span>
-            </label>
-            <div class="button-group">
-              <button class="action-btn copy-btn" data-target="output" title="复制">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                复制
-              </button>
+          
+          <div class="middle-buttons">
+            <button class="primary-btn convert-json-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              JSON→YAML
+            </button>
+            <button class="primary-btn convert-yaml-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              YAML→JSON
+            </button>
+          </div>
+          
+          <div class="output-section">
+            <div class="section-header">
+              <label for="output" class="section-label">
+                <span class="label-icon">📤</span>
+                <span>输出 YAML</span>
+              </label>
+              <div class="button-group">
+                <button class="action-btn copy-btn" data-target="output" title="复制">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  复制
+                </button>
+                <button class="action-btn paste-btn" data-target="output" title="粘贴">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                  粘贴
+                </button>
+              </div>
             </div>
+            <textarea id="output" class="tool-input" placeholder='hello: world' spellcheck="false"></textarea>
           </div>
-          <div id="output" class="tool-output">在左侧输入 JSON 数据...</div>
         </div>
       </div>
     `;
     toolScript = `
       const inputEl = document.getElementById('input');
       const outputEl = document.getElementById('output');
-      
-      inputEl.addEventListener('input', () => {
-        if (!inputEl.value.trim()) {
-          outputEl.textContent = '在左侧输入 JSON 数据...';
-          outputEl.className = 'tool-output';
-          return;
-        }
-        try {
-          const json = JSON.parse(inputEl.value);
-          const yamlStr = window.jsyaml.dump(json);
-          outputEl.textContent = yamlStr;
-          outputEl.className = 'tool-output success';
-        } catch (e) {
-          outputEl.textContent = '❌ 无效的 JSON: ' + e.message;
-          outputEl.className = 'tool-output error';
-        }
-      });
+      const convertJsonBtn = document.querySelector('.convert-json-btn');
+      const convertYamlBtn = document.querySelector('.convert-yaml-btn');
       
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js';
       script.onload = () => {
         window.jsyaml = jsyaml;
-        if (inputEl.value) inputEl.dispatchEvent(new Event('input'));
+        
+        // JSON -> YAML 按钮
+        convertJsonBtn.addEventListener('click', () => {
+          if (!inputEl.value.trim()) {
+            outputEl.value = '';
+            return;
+          }
+          try {
+            const json = JSON.parse(inputEl.value);
+            const yamlStr = window.jsyaml.dump(json);
+            outputEl.value = yamlStr;
+          } catch (e) {
+            outputEl.value = '❌ 无效的 JSON: ' + e.message;
+          }
+        });
+        
+        // YAML -> JSON 按钮
+        convertYamlBtn.addEventListener('click', () => {
+          if (!outputEl.value.trim()) {
+            inputEl.value = '';
+            return;
+          }
+          try {
+            const yamlObj = window.jsyaml.load(outputEl.value);
+            const jsonStr = JSON.stringify(yamlObj, null, 2);
+            inputEl.value = jsonStr;
+          } catch (e) {
+            inputEl.value = '❌ 无效的 YAML: ' + e.message;
+          }
+        });
       };
       document.head.appendChild(script);
       
@@ -103,63 +149,110 @@ switch (template) {
 
   case "encoder":
     toolHtml = `
-      <div class="tool-container">
-        <div class="input-section">
-          <div class="section-header">
-            <label for="input" class="section-label">
-              <span class="label-icon">📝</span>
-              <span>原始文本</span>
-            </label>
-            <div class="button-group">
-              <button class="action-btn paste-btn" data-target="input" title="粘贴">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                粘贴
-              </button>
+      <div class="tool-wrapper">
+        <div class="tool-container three-column">
+          <div class="input-section">
+            <div class="section-header">
+              <label for="input" class="section-label">
+                <span class="label-icon">📝</span>
+                <span>原始文本</span>
+              </label>
+              <div class="button-group">
+                <button class="action-btn copy-btn" data-target="input" title="复制">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  复制
+                </button>
+                <button class="action-btn paste-btn" data-target="input" title="粘贴">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                  粘贴
+                </button>
+              </div>
             </div>
+            <textarea id="input" class="tool-input" placeholder='Hello World' spellcheck="false"></textarea>
           </div>
-          <textarea id="input" class="tool-input" placeholder='Hello World' spellcheck="false"></textarea>
-        </div>
-        <div class="output-section">
-          <div class="section-header">
-            <label class="section-label">
-              <span class="label-icon">🔐</span>
-              <span>Base64 编码</span>
-            </label>
-            <div class="button-group">
-              <button class="action-btn copy-btn" data-target="output" title="复制">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                复制
-              </button>
+          
+          <div class="middle-buttons">
+            <button class="primary-btn encode-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              编码
+            </button>
+            <button class="primary-btn decode-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              解码
+            </button>
+          </div>
+          
+          <div class="output-section">
+            <div class="section-header">
+              <label for="output" class="section-label">
+                <span class="label-icon">🔐</span>
+                <span>Base64 编码</span>
+              </label>
+              <div class="button-group">
+                <button class="action-btn copy-btn" data-target="output" title="复制">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  复制
+                </button>
+                <button class="action-btn paste-btn" data-target="output" title="粘贴">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                  粘贴
+                </button>
+              </div>
             </div>
+            <textarea id="output" class="tool-input" placeholder='SGVsbG8gV29ybGQ=' spellcheck="false"></textarea>
           </div>
-          <div id="output" class="tool-output">在左侧输入文本...</div>
         </div>
       </div>
     `;
     toolScript = `
       const inputEl = document.getElementById('input');
       const outputEl = document.getElementById('output');
+      const encodeBtn = document.querySelector('.encode-btn');
+      const decodeBtn = document.querySelector('.decode-btn');
       
-      inputEl.addEventListener('input', () => {
+      // 编码按钮：原始文本 -> Base64
+      encodeBtn.addEventListener('click', () => {
         if (!inputEl.value) {
-          outputEl.textContent = '在左侧输入文本...';
-          outputEl.className = 'tool-output';
+          outputEl.value = '';
           return;
         }
         try {
           const text = inputEl.value;
           const encoded = btoa(unescape(encodeURIComponent(text)));
-          outputEl.textContent = encoded;
-          outputEl.className = 'tool-output success';
+          outputEl.value = encoded;
         } catch (e) {
-          outputEl.textContent = '❌ 编码失败: ' + e.message;
-          outputEl.className = 'tool-output error';
+          outputEl.value = '❌ 编码失败: ' + e.message;
+        }
+      });
+      
+      // 解码按钮：Base64 -> 原始文本
+      decodeBtn.addEventListener('click', () => {
+        if (!outputEl.value.trim()) {
+          inputEl.value = '';
+          return;
+        }
+        try {
+          const text = outputEl.value.trim();
+          const decoded = decodeURIComponent(escape(atob(text)));
+          inputEl.value = decoded;
+        } catch (e) {
+          inputEl.value = '❌ 解码失败: ' + e.message;
         }
       });
       
@@ -169,63 +262,110 @@ switch (template) {
 
   case "decoder":
     toolHtml = `
-      <div class="tool-container">
-        <div class="input-section">
-          <div class="section-header">
-            <label for="input" class="section-label">
-              <span class="label-icon">🔐</span>
-              <span>Base64 编码</span>
-            </label>
-            <div class="button-group">
-              <button class="action-btn paste-btn" data-target="input" title="粘贴">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                粘贴
-              </button>
+      <div class="tool-wrapper">
+        <div class="tool-container three-column">
+          <div class="input-section">
+            <div class="section-header">
+              <label for="input" class="section-label">
+                <span class="label-icon">🔐</span>
+                <span>Base64 编码</span>
+              </label>
+              <div class="button-group">
+                <button class="action-btn copy-btn" data-target="input" title="复制">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  复制
+                </button>
+                <button class="action-btn paste-btn" data-target="input" title="粘贴">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                  粘贴
+                </button>
+              </div>
             </div>
+            <textarea id="input" class="tool-input" placeholder='SGVsbG8gV29ybGQ=' spellcheck="false"></textarea>
           </div>
-          <textarea id="input" class="tool-input" placeholder='SGVsbG8gV29ybGQ=' spellcheck="false"></textarea>
-        </div>
-        <div class="output-section">
-          <div class="section-header">
-            <label class="section-label">
-              <span class="label-icon">📝</span>
-              <span>解码结果</span>
-            </label>
-            <div class="button-group">
-              <button class="action-btn copy-btn" data-target="output" title="复制">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                复制
-              </button>
+          
+          <div class="middle-buttons">
+            <button class="primary-btn decode-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              解码
+            </button>
+            <button class="primary-btn encode-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              编码
+            </button>
+          </div>
+          
+          <div class="output-section">
+            <div class="section-header">
+              <label for="output" class="section-label">
+                <span class="label-icon">📝</span>
+                <span>解码结果</span>
+              </label>
+              <div class="button-group">
+                <button class="action-btn copy-btn" data-target="output" title="复制">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  复制
+                </button>
+                <button class="action-btn paste-btn" data-target="output" title="粘贴">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                  粘贴
+                </button>
+              </div>
             </div>
+            <textarea id="output" class="tool-input" placeholder='Hello World' spellcheck="false"></textarea>
           </div>
-          <div id="output" class="tool-output">在左侧输入 Base64...</div>
         </div>
       </div>
     `;
     toolScript = `
       const inputEl = document.getElementById('input');
       const outputEl = document.getElementById('output');
+      const decodeBtn = document.querySelector('.decode-btn');
+      const encodeBtn = document.querySelector('.encode-btn');
       
-      inputEl.addEventListener('input', () => {
+      // 解码按钮：Base64 -> 解码结果
+      decodeBtn.addEventListener('click', () => {
         if (!inputEl.value.trim()) {
-          outputEl.textContent = '在左侧输入 Base64...';
-          outputEl.className = 'tool-output';
+          outputEl.value = '';
           return;
         }
         try {
           const text = inputEl.value.trim();
           const decoded = decodeURIComponent(escape(atob(text)));
-          outputEl.textContent = decoded;
-          outputEl.className = 'tool-output success';
+          outputEl.value = decoded;
         } catch (e) {
-          outputEl.textContent = '❌ 无效的 Base64: ' + e.message;
-          outputEl.className = 'tool-output error';
+          outputEl.value = '❌ 无效的 Base64: ' + e.message;
+        }
+      });
+      
+      // 编码按钮：解码结果 -> Base64
+      encodeBtn.addEventListener('click', () => {
+        if (!outputEl.value) {
+          inputEl.value = '';
+          return;
+        }
+        try {
+          const text = outputEl.value;
+          const encoded = btoa(unescape(encodeURIComponent(text)));
+          inputEl.value = encoded;
+        } catch (e) {
+          inputEl.value = '❌ 编码失败: ' + e.message;
         }
       });
       
@@ -235,63 +375,87 @@ switch (template) {
 
   case "validator":
     toolHtml = `
-      <div class="tool-container">
-        <div class="input-section">
-          <div class="section-header">
-            <label for="input" class="section-label">
-              <span class="label-icon">📋</span>
-              <span>输入 JSON/YAML</span>
-            </label>
-            <div class="button-group">
-              <button class="action-btn paste-btn" data-target="input" title="粘贴">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                粘贴
-              </button>
+      <div class="tool-wrapper">
+        <div class="tool-container three-column">
+          <div class="input-section">
+            <div class="section-header">
+              <label for="input" class="section-label">
+                <span class="label-icon">📋</span>
+                <span>输入 JSON/YAML</span>
+              </label>
+              <div class="button-group">
+                <button class="action-btn copy-btn" data-target="input" title="复制">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  复制
+                </button>
+                <button class="action-btn paste-btn" data-target="input" title="粘贴">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                  粘贴
+                </button>
+              </div>
             </div>
+            <textarea id="input" class="tool-input" placeholder='{ "valid": "json" }' spellcheck="false"></textarea>
           </div>
-          <textarea id="input" class="tool-input" placeholder='{ "valid": "json" }' spellcheck="false"></textarea>
-        </div>
-        <div class="output-section">
-          <div class="section-header">
-            <label class="section-label">
-              <span class="label-icon">✓</span>
-              <span>验证结果</span>
-            </label>
-            <div class="button-group">
-              <button class="action-btn copy-btn" data-target="output" title="复制">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                复制
-              </button>
+          
+          <div class="middle-buttons">
+            <button class="primary-btn validate-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              验证
+            </button>
+          </div>
+          
+          <div class="output-section">
+            <div class="section-header">
+              <label for="output" class="section-label">
+                <span class="label-icon">✓</span>
+                <span>验证结果</span>
+              </label>
+              <div class="button-group">
+                <button class="action-btn copy-btn" data-target="output" title="复制">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  复制
+                </button>
+                <button class="action-btn paste-btn" data-target="output" title="粘贴">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  </svg>
+                  粘贴
+                </button>
+              </div>
             </div>
+            <textarea id="output" class="tool-input" placeholder='验证结果将显示在这里...' spellcheck="false"></textarea>
           </div>
-          <div id="output" class="tool-output">等待输入...</div>
         </div>
       </div>
     `;
     toolScript = `
       const inputEl = document.getElementById('input');
       const outputEl = document.getElementById('output');
+      const validateBtn = document.querySelector('.validate-btn');
       
-      inputEl.addEventListener('input', () => {
+      validateBtn.addEventListener('click', () => {
         if (!inputEl.value.trim()) {
-          outputEl.textContent = '等待输入...';
-          outputEl.className = 'tool-output';
+          outputEl.value = '';
           return;
         }
         try {
           const text = inputEl.value;
           const parsed = JSON.parse(text);
-          outputEl.innerHTML = '<div class="success-badge">✅ 有效的 JSON</div><div class="json-info">已解析 ' + JSON.stringify(parsed).length + ' 个字符</div>';
-          outputEl.className = 'tool-output success';
+          outputEl.value = '✅ 有效的 JSON\\n\\n已解析 ' + JSON.stringify(parsed).length + ' 个字符\\n\\n格式化后:\\n' + JSON.stringify(parsed, null, 2);
         } catch (e) {
-          outputEl.innerHTML = '<div class="error-badge">❌ 无效的 JSON</div><div class="error-message">' + e.message + '</div>';
-          outputEl.className = 'tool-output error';
+          outputEl.value = '❌ 无效的 JSON\\n\\n错误信息:\\n' + e.message;
         }
       });
       
@@ -342,14 +506,22 @@ switch (template) {
         box-sizing: border-box;
       }
 
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
         font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 2rem 1.5rem;
         background: var(--bg-main);
         color: var(--text-primary);
         line-height: 1.6;
+        display: flex;
+        flex-direction: column;
       }
 
       h1 {
@@ -362,16 +534,82 @@ switch (template) {
         background-clip: text;
       }
 
+      .tool-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex: 1;
+        min-height: 0;
+      }
+
       .tool-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
-        margin: 2rem 0;
         padding: 2rem;
         background: var(--bg-card);
         border-radius: 16px;
         box-shadow: var(--shadow-lg);
         border: 1px solid var(--border);
+        flex: 1;
+        min-height: 0;
+      }
+
+      .tool-container.three-column {
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1rem;
+      }
+
+      .middle-buttons {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        padding: 0 0.5rem;
+      }
+
+      .middle-buttons .primary-btn {
+        padding: 1rem 1.5rem;
+        min-width: 120px;
+      }
+
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1rem 0;
+      }
+
+      .primary-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        box-shadow: var(--shadow-md);
+      }
+
+      .primary-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .primary-btn:active {
+        transform: translateY(0);
+      }
+
+      .primary-btn svg {
+        width: 20px;
+        height: 20px;
       }
 
       .input-section,
@@ -379,6 +617,7 @@ switch (template) {
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
+        min-height: 0;
       }
 
       .section-header {
@@ -449,7 +688,8 @@ switch (template) {
 
       .tool-input {
         width: 100%;
-        min-height: 200px;
+        height: 100%;
+        min-height: 300px;
         padding: 1rem;
         font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         font-size: 0.9rem;
@@ -458,8 +698,9 @@ switch (template) {
         border-radius: 12px;
         background: var(--bg-main);
         color: var(--text-primary);
-        resize: vertical;
+        resize: none;
         transition: all 0.2s ease;
+        flex: 1;
       }
 
       .tool-input:focus {
@@ -553,9 +794,22 @@ switch (template) {
           gap: 1rem;
         }
 
-        .tool-input,
-        .tool-output {
-          min-height: 150px;
+        .tool-container.three-column {
+          grid-template-columns: 1fr;
+        }
+
+        .middle-buttons {
+          flex-direction: row;
+          padding: 0;
+        }
+
+        .middle-buttons .primary-btn {
+          flex: 1;
+          min-width: auto;
+        }
+
+        .tool-input {
+          min-height: 200px;
         }
 
         .section-header {
@@ -571,6 +825,14 @@ switch (template) {
         .action-btn {
           flex: 1;
         }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        .primary-btn {
+          width: 100%;
+        }
       }
 
       @keyframes fadeIn {
@@ -584,7 +846,7 @@ switch (template) {
         }
       }
 
-      .tool-container {
+      .tool-wrapper {
         animation: fadeIn 0.5s ease;
       }
     </style>
@@ -611,7 +873,7 @@ switch (template) {
           btn.addEventListener('click', async () => {
             const target = btn.getAttribute('data-target');
             const element = document.getElementById(target);
-            const text = element.textContent || element.value;
+            const text = element.value || element.textContent;
             
             try {
               await navigator.clipboard.writeText(text);
