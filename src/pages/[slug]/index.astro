@@ -101,50 +101,101 @@ switch (template) {
       </div>
     `;
     toolScript = `
-      const inputEl = document.getElementById('input');
-      const outputEl = document.getElementById('output');
-      const convertJsonBtn = document.querySelector('.convert-json-btn');
-      const convertYamlBtn = document.querySelector('.convert-yaml-btn');
-      
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js';
-      script.onload = () => {
-        window.jsyaml = jsyaml;
+  const inputEl = document.getElementById('input');
+  const outputEl = document.getElementById('output');
+  const convertJsonBtn = document.querySelector('.convert-json-btn');
+  const convertYamlBtn = document.querySelector('.convert-yaml-btn');
+  
+  // 定义 setupButtons 函数
+  function setupButtons() {
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const target = btn.getAttribute('data-target');
+        const element = document.getElementById(target);
+        const text = element.value || element.textContent;
         
-        // JSON -> YAML 按钮
-        convertJsonBtn.addEventListener('click', () => {
-          if (!inputEl.value.trim()) {
-            outputEl.value = '';
-            return;
-          }
-          try {
-            const json = JSON.parse(inputEl.value);
-            const yamlStr = window.jsyaml.dump(json);
-            outputEl.value = yamlStr;
-          } catch (e) {
-            outputEl.value = '❌ 无效的 JSON: ' + e.message;
-          }
-        });
+        try {
+          await navigator.clipboard.writeText(text);
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>已复制';
+          btn.classList.add('success');
+          
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('success');
+          }, 2000);
+        } catch (err) {
+          alert('复制失败: ' + err.message);
+        }
+      });
+    });
+    
+    document.querySelectorAll('.paste-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const target = btn.getAttribute('data-target');
+        const element = document.getElementById(target);
         
-        // YAML -> JSON 按钮
-        convertYamlBtn.addEventListener('click', () => {
-          if (!outputEl.value.trim()) {
-            inputEl.value = '';
-            return;
-          }
-          try {
-            const yamlObj = window.jsyaml.load(outputEl.value);
-            const jsonStr = JSON.stringify(yamlObj, null, 2);
-            inputEl.value = jsonStr;
-          } catch (e) {
-            inputEl.value = '❌ 无效的 YAML: ' + e.message;
-          }
-        });
-      };
-      document.head.appendChild(script);
-      
-      setupButtons();
-    `;
+        try {
+          const text = await navigator.clipboard.readText();
+          element.value = text;
+          element.dispatchEvent(new Event('input'));
+          
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>已粘贴';
+          btn.classList.add('success');
+          
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('success');
+          }, 2000);
+        } catch (err) {
+          alert('粘贴失败: ' + err.message);
+        }
+      });
+    });
+  }
+
+  // 加载 js-yaml 库
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js';
+  script.onload = () => {
+    window.jsyaml = jsyaml;
+    
+    // JSON -> YAML 按钮
+    convertJsonBtn.addEventListener('click', () => {
+      if (!inputEl.value.trim()) {
+        outputEl.value = '';
+        return;
+      }
+      try {
+        const json = JSON.parse(inputEl.value);
+        const yamlStr = window.jsyaml.dump(json);
+        outputEl.value = yamlStr;
+      } catch (e) {
+        outputEl.value = '❌ 无效的 JSON: ' + e.message;
+      }
+    });
+    
+    // YAML -> JSON 按钮
+    convertYamlBtn.addEventListener('click', () => {
+      if (!outputEl.value.trim()) {
+        inputEl.value = '';
+        return;
+      }
+      try {
+        const yamlObj = window.jsyaml.load(outputEl.value);
+        const jsonStr = JSON.stringify(yamlObj, null, 2);
+        inputEl.value = jsonStr;
+      } catch (e) {
+        inputEl.value = '❌ 无效的 YAML: ' + e.message;
+      }
+    });
+
+    // 初始化按钮功能
+    setupButtons();
+  };
+  document.head.appendChild(script);
+`;
     break;
 
   case "encoder":
@@ -485,15 +536,24 @@ switch (template) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-F29J9P1MHY"
-    ></script>
-    <script>
+    <script is:inline>
+      // 等待 gtag.js 加载完成后再执行
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
       gtag("config", "G-F29J9P1MHY");
+    </script>
+
+    <!-- 确保 gtag.js 已加载 -->
+    <script is:inline>
+      // 可选：添加一个检查函数
+      if (typeof gtag === "function") {
+        console.log("✅ GA4 loaded successfully");
+      } else {
+        console.error("❌ GA4 failed to load");
+      }
     </script>
 
     <style>
